@@ -30,6 +30,52 @@
 
 */
 
+	/* memory reserves: from downstream sdm845-b1c1-memory.dtsi */
+
+	reserved-memory {
+		easel_mem: easel_mem@9f800000 {
+			compatible = "removed-dma-pool";
+			reg = <0 0x9f800000 0 0x2000000>;
+			label = "easel_mem";
+		};
+
+		debug_info: debug_info@0 {
+			compatible = "removed-dma-pool";
+			no-map;
+			reg = <0 0xa1800000 0 0x00010000>;
+		};
+
+		ramoops_mem: ramoops_region@a1810000 {
+			compatible = "removed-dma-pool";
+			no-map;
+			reg = <0 0xa1810000 0 0x200000>;
+		};
+
+		alt_ramoops_mem: alt_ramoops_region@a1a10000 {
+			compatible = "removed-dma-pool";
+			no-map;
+			reg = <0 0xa1a10000 0 0x200000>;
+		};
+
+		ramoops_meta_mem: ramoops_meta_region@a1c10000 {
+			compatible = "removed-dma-pool";
+			no-map;
+			reg = <0 0xa1c10000 0 0x1000>;
+		};
+
+	};
+
+	/* ramoops: from downstream sdm845-b1c1-common.dtsi */
+
+	ramoops {
+		compatible = "ramoops";
+		memory-region = <&ramoops_mem>;
+		alt-memory-region = <&alt_ramoops_mem>;
+		record-size = <0x20000>;
+		console-size = <0x100000>;
+		pmsg-size = <0x80000>;
+	};
+
 	vph_pwr: vph-pwr-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vph_pwr";
