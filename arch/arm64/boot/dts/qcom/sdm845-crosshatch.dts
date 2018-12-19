@@ -54,7 +54,7 @@
 		vin-supply = <&vph_pwr>;
 	};
 };
-
+/* This is entirely copied from mtp, except for commented parts. */
 &apps_rsc {
 	pm8998-rpmh-regulators {
 		compatible = "qcom,pm8998-rpmh-regulators";
@@ -211,10 +211,10 @@
 			regulator-max-microvolt = <2960000>;
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
-
+		/* based on downstream sdm845-c1-touch.dtsi */
 		vreg_l14a_1p88: ldo14 {
 			regulator-min-microvolt = <1800000>;
-			regulator-max-microvolt = <1880000>;
+			regulator-max-microvolt = <1800000>;
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
@@ -242,9 +242,10 @@
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
+		/* based on downstream sdm845-c1-touch.dtsi */
 		vreg_l19a_3p0: ldo19 {
-			regulator-min-microvolt = <2856000>;
-			regulator-max-microvolt = <3104000>;
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
