@@ -4,6 +4,10 @@
  *
  * Copyright (c) 2018, The Linux Foundation. All rights reserved.
  */
+/*
+ * Modded as a base dts for Pixel 3 XL.
+ * The Pixel 3 also has dtbo overlays: plan is to only put the model numbers into that
+ */
 
 /dts-v1/;
 
@@ -14,6 +18,8 @@
 	model = "Qualcomm Technologies, Inc. SDM845 MTP";
 	compatible = "qcom,sdm845-mtp";
 
+/*
+
 	aliases {
 		serial0 = &uart9;
 	};
@@ -21,6 +27,8 @@
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
+
+*/
 
 	vph_pwr: vph-pwr-regulator {
 		compatible = "regulator-fixed";
@@ -349,6 +357,8 @@
 			   <GCC_QSPI_CNOC_PERIPH_AHB_CLK>;
 };
 
+/*
+
 &i2c10 {
 	status = "okay";
 	clock-frequency = <400000>;
@@ -357,14 +367,16 @@
 &qupv3_id_1 {
 	status = "okay";
 };
+*/
 
 &tlmm {
 	gpio-reserved-ranges = <0 4>, <81 4>;
 };
-
+/*
 &uart9 {
 	status = "okay";
 };
+*/
 
 &usb_1 {
 	status = "okay";
@@ -372,7 +384,8 @@
 
 &usb_1_dwc3 {
 	/* Until we have Type C hooked up we'll force this as host. */
-	dr_mode = "host";
+	/* Fixme: Pixel 3 XL: set it to device? */
+	/*dr_mode = "host";*/
 };
 
 &usb_1_hsphy {
@@ -395,17 +408,21 @@
 	vdda-pll-supply = <&vdda_usb1_ss_core>;
 };
 
+/*
+
 &usb_2 {
 	status = "okay";
 };
 
 &usb_2_dwc3 {
+*/
 	/*
 	 * Though the USB block on SDM845 can support host, there's no vbus
 	 * signal for this port on MTP.  Thus (unless you have a non-compliant
 	 * hub that works without vbus) the only sensible thing is to force
 	 * peripheral mode.
 	 */
+/*
 	dr_mode = "peripheral";
 };
 
@@ -426,9 +443,10 @@
 	vdda-phy-supply = <&vdda_usb2_ss_1p2>;
 	vdda-pll-supply = <&vdda_usb2_ss_core>;
 };
+*/
 
 /* PINCTRL - additions to nodes defined in sdm845.dtsi */
-
+/*
 &qup_i2c10_default {
 	pinconf {
 		pins = "gpio55", "gpio56";
@@ -450,3 +468,4 @@
 		bias-pull-up;
 	};
 };
+*/
