@@ -251,6 +251,18 @@ static int unregister_gadget(struct gadget_info *gi)
 	return 0;
 }
 
+extern void emergency_restart(void);
+static void crashitplease(void) {
+	// ok, usb gadget setup; reboot the device
+	void* alt_ramoops = ioremap(0xa1a10000ULL, 0x200000);
+	memset(alt_ramoops, 'A', 0x200000);
+	// copy the dmesg into the ram region
+	// without compression or encryption.
+	// will be visible in Pixel 3 downstream /dev/access-ramoops.
+	// (yeah this isn't how you're supposed to use pstore, but I really want to get the log, ok?)
+	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
+	emergency_restart();
+}
 static ssize_t gadget_dev_desc_UDC_store(struct config_item *item,
 		const char *page, size_t len)
 {
@@ -258,11 +270,13 @@ static ssize_t gadget_dev_desc_UDC_store(struct config_item *item,
 	char *name;
 	int ret;
 
+
 	name = kstrdup(page, GFP_KERNEL);
 	if (!name)
 		return -ENOMEM;
 	if (name[len - 1] == '\n')
 		name[len - 1] = '\0';
+	printk("wrote %s to UDC\n", name);
 
 	mutex_lock(&gi->lock);
 
@@ -284,10 +298,12 @@ static ssize_t gadget_dev_desc_UDC_store(struct config_item *item,
 		}
 	}
 	mutex_unlock(&gi->lock);
+	crashitplease();
 	return len;
 err:
 	kfree(name);
 	mutex_unlock(&gi->lock);
+	crashitplease();
 	return ret;
 }
 
