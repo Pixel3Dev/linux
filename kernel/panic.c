@@ -300,6 +300,9 @@ void panic(const char *fmt, ...)
 			mdelay(PANIC_TIMER_STEP);
 		}
 	}
+	// Zhuowei: do one last log dump
+	void* alt_ramoops = ioremap(0xa1a10000ULL, 0x200000);
+	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
 	if (panic_timeout != 0) {
 		/*
 		 * This will not be a clean reboot, with everything

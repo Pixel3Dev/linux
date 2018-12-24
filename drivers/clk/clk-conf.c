@@ -134,6 +134,7 @@ int of_clk_set_defaults(struct device_node *node, bool clk_supplier)
 
 	if (!node)
 		return 0;
+	printk("of_clk_set_defaults called with %s, %s, %s, %s\n", node->name, node->type, node->full_name, (clk_supplier? "supplier": "not supplier"));
 
 	rc = __set_clk_parents(node, clk_supplier);
 	if (rc < 0)
