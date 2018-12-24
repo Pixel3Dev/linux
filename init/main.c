@@ -1134,6 +1134,11 @@ static noinline void __init kernel_init_freeable(void)
 
 	do_basic_setup();
 
+	// Zhuowei: at this point, pstore should be up. Dump kmsg to pstore.
+	//kmsg_dump(KMSG_DUMP_OOPS);
+	//void* alt_ramoops = ioremap(0xa1a10000, 0x1000);
+	//memset(alt_ramoops, 'A', 0x1000);
+
 	/* Open the /dev/console on the rootfs, this should never fail */
 	if (ksys_open((const char __user *) "/dev/console", O_RDWR, 0) < 0)
 		pr_err("Warning: unable to open an initial console.\n");
