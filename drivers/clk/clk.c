@@ -331,8 +331,13 @@ struct clk_hw *
 clk_hw_get_parent_by_index(const struct clk_hw *hw, unsigned int index)
 {
 	struct clk_core *parent;
+	printk("clk_hw_get_parent_by_index: %p %d\n", hw, index);
+	if (hw && hw->core) {
+		printk("clock name: %s\n", hw->core->name);
+	}
 
 	parent = clk_core_get_parent_by_index(hw->core, index);
+	printk("returned %p\n", parent);
 
 	return !parent ? NULL : parent->hw;
 }
