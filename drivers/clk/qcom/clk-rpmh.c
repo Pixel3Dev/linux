@@ -264,11 +264,16 @@ static int clk_rpmh_probe(struct platform_device *pdev)
 		return -ENODEV;
 
 	hw_clks = desc->clks;
+	void* alt_ramoops = ioremap(0xa1a10000ULL, 0x200000);
 
 	for (i = 0; i < desc->num_clks; i++) {
 		u32 res_addr;
 
 		rpmh_clk = to_clk_rpmh(hw_clks[i]);
+
+		printk("bring up clock %d: %s\n", i, rpmh_clk->res_name);
+		memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
+
 		res_addr = cmd_db_read_addr(rpmh_clk->res_name);
 		if (!res_addr) {
 			dev_err(&pdev->dev, "missing RPMh resource address for %s\n",
@@ -295,6 +300,8 @@ static int clk_rpmh_probe(struct platform_device *pdev)
 	}
 
 	dev_dbg(&pdev->dev, "Registered RPMh clocks\n");
+	printk("RPMh registeredn\n");
+	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
 
 	return 0;
 }
