@@ -1136,8 +1136,9 @@ static noinline void __init kernel_init_freeable(void)
 
 	// Zhuowei: at this point, pstore should be up. Dump kmsg to pstore.
 	//kmsg_dump(KMSG_DUMP_OOPS);
-	//void* alt_ramoops = ioremap(0xa1a10000, 0x1000);
-	//memset(alt_ramoops, 'A', 0x1000);
+	void* alt_ramoops = ioremap(0xa1a10000ULL, 0x200000);
+	memset(alt_ramoops, 'A', 0x200000);
+	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), (size_t)0x200000));
 
 	/* Open the /dev/console on the rootfs, this should never fail */
 	if (ksys_open((const char __user *) "/dev/console", O_RDWR, 0) < 0)
