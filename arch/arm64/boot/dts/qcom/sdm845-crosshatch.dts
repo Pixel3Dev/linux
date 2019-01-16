@@ -43,8 +43,6 @@
 
 		/* hack: use framebuffer setup by bootloader.
 		 * the address is taken from the bootloader config (strings xbl.img | grep "Display Reserved")
-		 * it's wrong (it's closer to 0x9d500000, so the top is cut off), but I spent an hour
-		 * trying to find the right address and give up. It's just a temp hack anyways.
 		 */
 		framebuffer0: framebuffer@9d400000 {
 			compatible = "simple-framebuffer";
@@ -54,6 +52,9 @@
 			stride = <(1440 * 4)>;
 			format = "a8r8g8b8";
 			status = "okay";
+			vddi-supply = <&vreg_l14a_1p88>;
+			vci-supply = <&vreg_l28a_3p0>;
+			/* lab-supply = <&lab_regulator>; */
 		};
 	};
 
