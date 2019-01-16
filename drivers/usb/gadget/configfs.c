@@ -261,7 +261,7 @@ static void crashitplease(void) {
 	// will be visible in Pixel 3 downstream /dev/access-ramoops.
 	// (yeah this isn't how you're supposed to use pstore, but I really want to get the log, ok?)
 	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
-	emergency_restart();
+	//emergency_restart();
 }
 static ssize_t gadget_dev_desc_UDC_store(struct config_item *item,
 		const char *page, size_t len)
