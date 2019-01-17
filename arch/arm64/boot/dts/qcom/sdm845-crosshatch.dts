@@ -444,6 +444,31 @@
 };
 */
 
+&i2c2 {
+	status = "okay";
+	clock-frequency = <400000>;
+	touchscreen@48 {
+		status = "okay";
+		compatible = "samsung,s6sy761";
+		reg = <0x48>;
+
+		/* todo: gpio reset pin */
+
+		interrupt-parent = <&tlmm>;
+		interrupts = <125 IRQ_TYPE_LEVEL_LOW>;
+
+		avdd-supply = <&vreg_l14a_1p88>;
+		vdd-supply = <&vreg_l19a_3p0>;
+
+		touchscreen-size-x = <1440>;
+		touchscreen-size-y = <2960>;
+	};
+};
+
+&qupv3_id_0 {
+	status = "okay";
+};
+
 &tlmm {
 	gpio-reserved-ranges = <0 4>, <81 4>;
 };
@@ -547,3 +572,11 @@
 	};
 };
 */
+
+&qup_i2c2_default {
+	pinconf {
+		pins = "gpio27", "gpio28";
+		drive-strength = <2>;
+		bias-disable;
+	};
+};
