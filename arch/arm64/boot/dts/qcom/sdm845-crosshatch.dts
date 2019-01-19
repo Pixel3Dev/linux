@@ -428,6 +428,7 @@
 	/* Until we have Type C hooked up we'll force this as host. */
 	/* Fixme: Pixel 3 XL: set to peripheral since we only have one port */
 	dr_mode = "peripheral";
+	maximum-speed = "high-speed";
 	/* Crosshatch hack: disable USB-3 phy for now. I don't have this enabled in Kconfig yet. */
 	phys = <&usb_1_hsphy>;
 	phy-names = "usb2-phy";
