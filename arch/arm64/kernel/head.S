@@ -115,6 +115,12 @@ pe_header:
 	 *  x19/x20    __primary_switch()         callee preserved temp registers
 	 */
 ENTRY(stext)
+	/* crosshatch: hack: try turning off smmu */
+	mov	x2, #0x5040000
+	ldr	w3, [x2]
+	orr	w3, w3, #0x1
+	str	w3, [x2]
+	/* end hack */
 	bl	preserve_boot_args
 	bl	el2_setup			// Drop to EL1, w0=cpu_boot_mode
 	adrp	x23, __PHYS_OFFSET
