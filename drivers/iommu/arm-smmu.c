@@ -102,6 +102,15 @@
 #define MSI_IOVA_BASE			0x8000000
 #define MSI_IOVA_LENGTH			0x100000
 
+static void dumpLog(void) {
+	static void* alt_ramoops;
+	if (!alt_ramoops) {
+		alt_ramoops = ioremap(0xa1a10000ULL, 0x200000);
+	}
+	memset(alt_ramoops, 'A', 0x200000);
+	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), (size_t)0x200000));
+}
+
 static int force_stage;
 /*
  * not really modular, but the easiest way to keep compat with existing
@@ -1239,6 +1248,9 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
 	struct arm_smmu_device *smmu;
 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
 
+	printk("smmu add! %s\n", dev_name(dev));
+	dumpLog();
+
 	if (!fwspec || fwspec->ops != &arm_smmu_ops) {
 		dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
 		return -ENXIO;
@@ -1282,6 +1294,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
 
 rpm_put:
 	arm_smmu_rpm_put(smmu);
+	printk("smmu done! %s\n", dev_name(dev));
+	dumpLog();
 	return ret;
 }
 
@@ -2180,6 +2194,11 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
 	struct arm_smmu_device *smmu;
 	struct device *dev = &pdev->dev;
 	int num_irqs, i, err;
+
+	dumpLog();
+	local_irq_disable();
+	while (1) {
+	}
 
 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
 	if (!smmu) {
