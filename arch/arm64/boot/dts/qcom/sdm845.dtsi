@@ -1473,6 +1473,8 @@
 
 			resets = <&gcc GCC_USB30_PRIM_BCR>;
 
+			iommus = <&apps_smmu 0x740 0x0>;
+
 			usb_1_dwc3: dwc3@a600000 {
 				compatible = "snps,dwc3";
 				reg = <0xa600000 0xcd00>;
