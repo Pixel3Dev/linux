@@ -116,7 +116,7 @@ pe_header:
 	 */
 ENTRY(stext)
 	/* crosshatch: hack: try turning off smmu */
-	mov	x2, #0x5040000
+	mov	x2, #0x15000000
 	mov	w3, #0x1
 	str	w3, [x2]
 	/* end hack */
