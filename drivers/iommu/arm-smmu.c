@@ -2291,9 +2291,6 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
 	int num_irqs, i, err;
 
 	dumpLog();
-	local_irq_disable();
-	while (1) {
-	}
 
 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
 	if (!smmu) {
@@ -2429,6 +2426,11 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
 	 */
 	if (!using_legacy_binding)
 		arm_smmu_bus_init();
+
+	dumpLog();
+	local_irq_disable();
+	while (1) {
+	}
 
 	return 0;
 }
