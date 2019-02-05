@@ -1449,6 +1449,7 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges;
+			dma-ranges;
 
 			clocks = <&gcc GCC_CFG_NOC_USB3_PRIM_AXI_CLK>,
 				 <&gcc GCC_USB30_PRIM_MASTER_CLK>,
@@ -1473,12 +1474,11 @@
 
 			resets = <&gcc GCC_USB30_PRIM_BCR>;
 
-			iommus = <&apps_smmu 0x740 0x0>;
-
 			usb_1_dwc3: dwc3@a600000 {
 				compatible = "snps,dwc3";
 				reg = <0xa600000 0xcd00>;
 				interrupts = <GIC_SPI 133 IRQ_TYPE_LEVEL_HIGH>;
+				iommus = <&apps_smmu 0x740 0x0>;
 				snps,dis_u2_susphy_quirk;
 				snps,dis_enblslpm_quirk;
 				phys = <&usb_1_hsphy>, <&usb_1_ssphy>;
