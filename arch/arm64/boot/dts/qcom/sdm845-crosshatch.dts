@@ -51,7 +51,7 @@
 			height = <2960>;
 			stride = <(1440 * 4)>;
 			format = "a8r8g8b8";
-			status = "okay";
+			status = "disabled";
 			vddi-supply = <&vreg_l14a_1p88>;
 			vci-supply = <&vreg_l28a_3p0>;
 			/* lab-supply = <&lab_regulator>; */
