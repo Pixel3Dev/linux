@@ -11,6 +11,7 @@
 
 /dts-v1/;
 
+#include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
 #include "sdm845.dtsi"
 
@@ -399,13 +400,101 @@
 			   <GCC_QSPI_CNOC_PERIPH_AHB_CLK>;
 };
 
-/*
+&dsi0 {
+	status = "okay";
+	qcom,dual-dsi-mode;
+	qcom,master-dsi;
+	qcom,sync-dual-dsi;
 
+	vdda-supply = <&vdda_mipi_dsi0_1p2>;
+
+	panel@0 {
+		compatible = "truly,nt35597-2K-display";
+		reg = <0>;
+
+		vdda-supply = <&vreg_l14a_1p88>;
+		vdispp-supply = <&lab_regulator>;
+		vdispn-supply = <&ibb_regulator>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&disp_mode_sel &lcd_reset_n>;
+
+		mode-gpios = <&tlmm 52 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&tlmm 6 GPIO_ACTIVE_LOW>;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			port@0 {
+				reg = <0>;
+				panel0_in: endpoint {
+					remote-endpoint = <&dsi0_out>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				panel1_in: endpoint {
+					remote-endpoint = <&dsi1_out>;
+				};
+			};
+		};
+	};
+
+	ports {
+		port@1 {
+			endpoint {
+				remote-endpoint = <&panel0_in>;
+				data-lanes = <0 1 2 3>;
+			};
+		};
+	};
+};
+
+&dsi0_phy {
+	status = "okay";
+	vdds-supply = <&vdda_mipi_dsi0_pll>;
+};
+
+&dsi1 {
+	status = "okay";
+
+	qcom,dual-dsi-mode;
+	qcom,sync-dual-dsi;
+
+	vdda-supply = <&vdda_mipi_dsi1_1p2>;
+
+	ports {
+		port@1 {
+			endpoint {
+				remote-endpoint = <&panel1_in>;
+				data-lanes = <0 1 2 3>;
+			};
+		};
+	};
+};
+
+&dsi1_phy {
+	status = "okay";
+	vdds-supply = <&vdda_mipi_dsi1_pll>;
+};
+
+/*
 &i2c10 {
 	status = "okay";
 	clock-frequency = <400000>;
 };
+*/
 
+&mdss {
+	status = "okay";
+};
+
+&mdss_mdp {
+	status = "okay";
+};
+
+/*
 &qupv3_id_1 {
 	status = "okay";
 };
@@ -515,3 +604,33 @@
 	};
 };
 */
+
+/* PINCTRL - board-specific pinctrl */
+
+&tlmm {
+	disp_mode_sel: disp-mode-sel {
+		pinmux {
+			function = "gpio";
+			pins = "gpio52";
+		};
+
+		pinconf {
+			pins = "gpio52";
+			drive-strength = <8>;
+			bias-disable;
+		};
+	};
+
+	lcd_reset_n: lcd-reset-n {
+		pinmux {
+			function = "gpio";
+			pins = "gpio6";
+		};
+
+		pinconf {
+			pins = "gpio6";
+			drive-strength = <8>;
+			bias-disable;
+		};
+	};
+};
