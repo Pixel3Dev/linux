@@ -115,6 +115,21 @@ pe_header:
 	 *  x19/x20    __primary_switch()         callee preserved temp registers
 	 */
 ENTRY(stext)
+	/* crosshatch: hack: freeze the screen */
+	/* see dsi_ctrl_hw_cmn_soft_reset in downstream kernel */
+	/* mdss_dsi0 + DSI_CTRL */
+	mov	x1, #0x4004
+	movk	x1, #0xae9, lsl #16
+	ldr	w2, [x1]
+	and	w2, w2, #~0x7
+	str	w2, [x1]
+	/* mdss_dsi1 + DSI_CTRL */
+	mov	x1, #0x6004
+	movk	x1, #0xae9, lsl #16
+	ldr	w2, [x1]
+	and	w2, w2, #~0x7
+	str	w2, [x1]
+	/* end */
 	bl	preserve_boot_args
 	bl	el2_setup			// Drop to EL1, w0=cpu_boot_mode
 	adrp	x23, __PHYS_OFFSET
