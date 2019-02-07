@@ -402,25 +402,21 @@
 
 &dsi0 {
 	status = "okay";
-	qcom,dual-dsi-mode;
 	qcom,master-dsi;
-	qcom,sync-dual-dsi;
 
 	vdda-supply = <&vdda_mipi_dsi0_1p2>;
 
 	panel@0 {
-		compatible = "truly,nt35597-2K-display";
+		compatible = "samsung,s6e3ha8";
 		reg = <0>;
 
 		vdda-supply = <&vreg_l14a_1p88>;
+/* these regulators are not supported yet
 		vdispp-supply = <&lab_regulator>;
 		vdispn-supply = <&ibb_regulator>;
+*/
 
-		pinctrl-names = "default";
-		pinctrl-0 = <&disp_mode_sel &lcd_reset_n>;
-
-		mode-gpios = <&tlmm 52 GPIO_ACTIVE_HIGH>;
-		reset-gpios = <&tlmm 6 GPIO_ACTIVE_LOW>;
+/* pinctrl not added yet */
 
 		ports {
 			#address-cells = <1>;
@@ -429,13 +425,6 @@
 				reg = <0>;
 				panel0_in: endpoint {
 					remote-endpoint = <&dsi0_out>;
-				};
-			};
-
-			port@1 {
-				reg = <1>;
-				panel1_in: endpoint {
-					remote-endpoint = <&dsi1_out>;
 				};
 			};
 		};
@@ -454,29 +443,6 @@
 &dsi0_phy {
 	status = "okay";
 	vdds-supply = <&vdda_mipi_dsi0_pll>;
-};
-
-&dsi1 {
-	status = "okay";
-
-	qcom,dual-dsi-mode;
-	qcom,sync-dual-dsi;
-
-	vdda-supply = <&vdda_mipi_dsi1_1p2>;
-
-	ports {
-		port@1 {
-			endpoint {
-				remote-endpoint = <&panel1_in>;
-				data-lanes = <0 1 2 3>;
-			};
-		};
-	};
-};
-
-&dsi1_phy {
-	status = "okay";
-	vdds-supply = <&vdda_mipi_dsi1_pll>;
 };
 
 /*
@@ -604,33 +570,3 @@
 	};
 };
 */
-
-/* PINCTRL - board-specific pinctrl */
-
-&tlmm {
-	disp_mode_sel: disp-mode-sel {
-		pinmux {
-			function = "gpio";
-			pins = "gpio52";
-		};
-
-		pinconf {
-			pins = "gpio52";
-			drive-strength = <8>;
-			bias-disable;
-		};
-	};
-
-	lcd_reset_n: lcd-reset-n {
-		pinmux {
-			function = "gpio";
-			pins = "gpio6";
-		};
-
-		pinconf {
-			pins = "gpio6";
-			drive-strength = <8>;
-			bias-disable;
-		};
-	};
-};
