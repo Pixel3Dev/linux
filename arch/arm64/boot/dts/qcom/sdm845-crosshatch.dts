@@ -410,7 +410,8 @@
 		compatible = "samsung,s6e3ha8";
 		reg = <0>;
 
-		vdda-supply = <&vreg_l14a_1p88>;
+		vddi-supply = <&vreg_l14a_1p88>;
+		vci-supply = <&vreg_l28a_3p0>;
 /* these regulators are not supported yet
 		vdispp-supply = <&lab_regulator>;
 		vdispn-supply = <&ibb_regulator>;
