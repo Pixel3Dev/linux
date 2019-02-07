@@ -2942,6 +2942,35 @@ static const struct panel_desc_dsi panasonic_vvx10f004b00 = {
 	.lanes = 4,
 };
 
+/* borrowed from samsung_s6e3ha2 */
+static const struct drm_display_mode samsung_s6e3ha8_mode = {
+	.clock = 222372,
+	.hdisplay = 1440,
+	.hsync_start = 1440 + 1,
+	.hsync_end = 1440 + 1 + 1,
+	.htotal = 1440 + 1 + 1 + 1,
+	.vdisplay = 2960,
+	.vsync_start = 2960 + 1,
+	.vsync_end = 2960 + 1 + 1,
+	.vtotal = 2960 + 1 + 1 + 15,
+	.vrefresh = 60,
+};
+
+static const struct panel_desc_dsi samsung_s6e3ha8 = {
+	.desc = {
+		.modes = &lg_lh500wx1_sd03_mode,
+		.num_modes = 1,
+		.bpc = 8,
+		.size = {
+			.width = 1440,
+			.height = 2960,
+		},
+	},
+	.flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_CLOCK_NON_CONTINUOUS,
+	.format = MIPI_DSI_FMT_RGB888,
+	.lanes = 4,
+};
+
 static const struct of_device_id dsi_of_match[] = {
 	{
 		.compatible = "auo,b080uan01",
@@ -2958,6 +2987,9 @@ static const struct of_device_id dsi_of_match[] = {
 	}, {
 		.compatible = "panasonic,vvx10f004b00",
 		.data = &panasonic_vvx10f004b00
+	}, {
+		.compatible = "samsung,s6e3ha8",
+		.data = &samsung_s6e3ha8
 	}, {
 		/* sentinel */
 	}
