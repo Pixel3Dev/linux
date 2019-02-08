@@ -221,6 +221,12 @@ static struct clk_hw *qcom_cc_clk_hw_get(struct of_phandle_args *clkspec,
 	return cc->rclks[idx] ? &cc->rclks[idx]->hw : ERR_PTR(-ENOENT);
 }
 
+static void dumpLog(void) {
+	void* alt_ramoops = ioremap(0xa1a10000ULL, 0x200000);
+	memset(alt_ramoops, 'A', 0x200000);
+	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), (size_t)0x200000));
+}
+
 int qcom_cc_really_probe(struct platform_device *pdev,
 			 const struct qcom_cc_desc *desc, struct regmap *regmap)
 {
@@ -272,6 +278,9 @@ int qcom_cc_really_probe(struct platform_device *pdev,
 	for (i = 0; i < num_clks; i++) {
 		if (!rclks[i])
 			continue;
+
+		printk("Registering clock %s\n", __clk_get_name(rclks[i]->hw.clk));
+		dumpLog();
 
 		ret = devm_clk_register_regmap(dev, rclks[i]);
 		if (ret)

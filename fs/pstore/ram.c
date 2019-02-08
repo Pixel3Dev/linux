@@ -19,6 +19,7 @@
  * 02110-1301 USA
  *
  */
+#define DEBUG
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
