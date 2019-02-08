@@ -11,6 +11,7 @@
  * GNU General Public License for more details.
  *
  */
+#define DEBUG
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
