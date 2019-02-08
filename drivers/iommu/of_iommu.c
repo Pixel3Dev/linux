@@ -229,6 +229,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
 
 	/* Ignore all other errors apart from EPROBE_DEFER */
 	if (err == -EPROBE_DEFER) {
+		printk("Deferring from iommu\n");
 		ops = ERR_PTR(err);
 	} else if (err < 0) {
 		dev_dbg(dev, "Adding to IOMMU failed: %d\n", err);

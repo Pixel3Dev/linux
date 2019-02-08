@@ -27,6 +27,7 @@
 #include <linux/limits.h>
 #include <linux/property.h>
 #include <linux/kmemleak.h>
+#include <linux/kallsyms.h>
 
 #include "base.h"
 #include "power/power.h"
@@ -570,15 +571,21 @@ static int platform_drv_probe(struct device *_dev)
 	int ret;
 
 	ret = of_clk_set_defaults(_dev->of_node, false);
+	printk("ret clk %d\n", ret);
 	if (ret < 0)
 		return ret;
 
 	ret = dev_pm_domain_attach(_dev, true);
+	printk("ret domain %d\n", ret);
 	if (ret)
 		goto out;
 
 	if (drv->probe) {
 		ret = drv->probe(dev);
+		char buf[256];
+		buf[0] = 0;
+		lookup_symbol_name((unsigned long)drv->probe, buf);
+		printk("platform_drv_probe %s %d\n", buf, ret);
 		if (ret)
 			dev_pm_domain_detach(_dev, true);
 	}

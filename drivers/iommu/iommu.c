@@ -120,7 +120,7 @@ int iommu_probe_device(struct device *dev)
 
 	if (ops)
 		ret = ops->add_device(dev);
-
+	printk("iommu_probe_device: %d\n", ret);
 	return ret;
 }
 

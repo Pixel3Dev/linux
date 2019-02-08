@@ -272,6 +272,7 @@ int drm_of_find_panel_or_bridge(const struct device_node *np,
 	}
 
 	of_node_put(remote);
+	printk("of graph get node: Returning %d\n", ret);
 	return ret;
 }
 EXPORT_SYMBOL_GPL(drm_of_find_panel_or_bridge);

@@ -433,10 +433,12 @@ int of_platform_bus_probe(struct device_node *root,
 
 	pr_debug("%s()\n", __func__);
 	pr_debug(" starting at: %pOF\n", root);
+	printk("platform bus probe\n");
 
 	/* Do a self check of bus type, if there's a match, create children */
 	if (of_match_node(matches, root)) {
 		rc = of_platform_bus_create(root, matches, NULL, parent, false);
+		printk("bus create %d\n", rc);
 	} else for_each_child_of_node(root, child) {
 		if (!of_match_node(matches, child))
 			continue;
@@ -445,9 +447,11 @@ int of_platform_bus_probe(struct device_node *root,
 			of_node_put(child);
 			break;
 		}
+		printk("bus create 2 %d\n", rc);
 	}
 
 	of_node_put(root);
+	printk("bus probe %d\n", rc);
 	return rc;
 }
 EXPORT_SYMBOL(of_platform_bus_probe);

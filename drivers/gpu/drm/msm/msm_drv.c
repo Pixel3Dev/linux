@@ -148,8 +148,10 @@ struct clk *msm_clk_get(struct platform_device *pdev, const char *name)
 	char name2[32];
 
 	clk = devm_clk_get(&pdev->dev, name);
-	if (!IS_ERR(clk) || PTR_ERR(clk) == -EPROBE_DEFER)
+	if (!IS_ERR(clk) || PTR_ERR(clk) == -EPROBE_DEFER) {
+		printk("clk result: %llx\n", (unsigned long long)clk);
 		return clk;
+	}
 
 	snprintf(name2, sizeof(name2), "%s_clk", name);
 
@@ -1298,11 +1300,12 @@ static int add_display_components(struct device *dev,
 		/* MDP4 */
 		mdp_dev = dev;
 	}
-
+	printk("found mdp\n");
 	ret = add_components_mdp(mdp_dev, matchptr);
 	if (ret)
 		of_platform_depopulate(dev);
 
+	printk("finished display\n");
 	return ret;
 }
 
@@ -1328,7 +1331,9 @@ static int add_gpu_components(struct device *dev,
 	if (!np)
 		return 0;
 
+	printk("gpu about to probe\n");
 	drm_of_component_match_add(dev, matchptr, compare_of, np);
+	printk("drm match add\n");
 
 	of_node_put(np);
 
@@ -1359,15 +1364,20 @@ static int msm_pdev_probe(struct platform_device *pdev)
 	struct component_match *match = NULL;
 	int ret;
 
+	printk("msm probe: display\n");
+
 	if (get_mdp_ver(pdev)) {
 		ret = add_display_components(&pdev->dev, &match);
 		if (ret)
 			return ret;
 	}
 
+	printk("msm probe: gpu\n");
 	ret = add_gpu_components(&pdev->dev, &match);
 	if (ret)
 		return ret;
+
+	printk("msm probe: dma\n");
 
 	/* on all devices that I am aware of, iommu's which can map
 	 * any address the cpu can see are used:
@@ -1375,7 +1385,7 @@ static int msm_pdev_probe(struct platform_device *pdev)
 	ret = dma_set_mask_and_coherent(&pdev->dev, ~0);
 	if (ret)
 		return ret;
-
+	printk("msm probe: master\n");
 	return component_master_add_with_match(&pdev->dev, &msm_drm_ops, match);
 }
 

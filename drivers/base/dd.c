@@ -27,6 +27,7 @@
 #include <linux/async.h>
 #include <linux/pm_runtime.h>
 #include <linux/pinctrl/devinfo.h>
+#include <linux/kallsyms.h>
 
 #include "base.h"
 #include "power/power.h"
@@ -497,16 +498,23 @@ re_probe:
 
 	if (dev->pm_domain && dev->pm_domain->activate) {
 		ret = dev->pm_domain->activate(dev);
+		printk("pm_domain %d\n", ret);
 		if (ret)
 			goto probe_failed;
 	}
 
 	if (dev->bus->probe) {
 		ret = dev->bus->probe(dev);
+		printk("bus probe %d\n", ret);
 		if (ret)
 			goto probe_failed;
 	} else if (drv->probe) {
+		char buf[256];
+		buf[0] = 0;
+		lookup_symbol_name((unsigned long)drv->probe, buf);
+		printk("drv %s %s\n", drv->name, buf);
 		ret = drv->probe(dev);
+		printk("drv probe %d\n", ret);
 		if (ret)
 			goto probe_failed;
 	}
@@ -542,12 +550,15 @@ re_probe:
 	goto done;
 
 probe_failed:
+	printk("probe failed\n");
 	arch_teardown_dma_ops(dev);
 dma_failed:
+	printk("dma failed\n");
 	if (dev->bus)
 		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
 					     BUS_NOTIFY_DRIVER_NOT_BOUND, dev);
 pinctrl_bind_failed:
+	printk("pinctrl bind failed\n");
 	device_links_no_driver(dev);
 	devres_release_all(dev);
 	driver_sysfs_remove(dev);
