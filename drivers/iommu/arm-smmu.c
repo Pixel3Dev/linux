@@ -1171,6 +1171,9 @@ static int arm_smmu_master_alloc_smes(struct device *dev)
 		ret = PTR_ERR(group);
 		goto out_err;
 	}
+
+	printk("putting into iommu\n");
+
 	iommu_group_put(group);
 
 	/* It worked! Now, poke the actual hardware */
@@ -1483,6 +1486,8 @@ static int arm_smmu_add_device(struct device *dev)
 		}
 	}
 
+	printk("About to add to arm smmu\n");
+
 	ret = -ENOMEM;
 	cfg = kzalloc(offsetof(struct arm_smmu_master_cfg, smendx[i]),
 		      GFP_KERNEL);
@@ -1500,6 +1505,8 @@ static int arm_smmu_add_device(struct device *dev)
 
 	ret = arm_smmu_master_alloc_smes(dev);
 	arm_smmu_rpm_put(smmu);
+
+	printk("alloc smes: %d\n", ret);
 
 	if (ret)
 		goto out_cfg_free;

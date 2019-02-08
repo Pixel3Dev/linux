@@ -1968,8 +1968,10 @@ int msm_dsi_host_register(struct mipi_dsi_host *host, bool check_defer)
 		 */
 		if (check_defer && msm_host->device_node) {
 			if (IS_ERR(of_drm_find_panel(msm_host->device_node)))
-				if (!of_drm_find_bridge(msm_host->device_node))
+				if (!of_drm_find_bridge(msm_host->device_node)) {
+					printk("Can't probe the panel driver!\n");
 					return -EPROBE_DEFER;
+				}
 		}
 	}
 
