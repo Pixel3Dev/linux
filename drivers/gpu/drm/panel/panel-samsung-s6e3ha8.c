@@ -180,6 +180,7 @@ static int s6e3ha8_probe(struct mipi_dsi_device *dsi)
 	struct device *dev = &dsi->dev;
 	struct s6e3ha8 *s6;
 	int ret;
+	printk("Probing s6e3ha8!\n");
 
 	s6 = devm_kzalloc(dev, sizeof(struct s6e3ha8), GFP_KERNEL);
 	if (!s6)
@@ -220,17 +221,24 @@ static int s6e3ha8_probe(struct mipi_dsi_device *dsi)
 		return ret;
 	}
 
+	printk("About to init panel\n");
+
 	drm_panel_init(&s6->panel);
 	s6->panel.dev = dev;
 	s6->panel.funcs = &s6e3ha8_drm_funcs;
+
+	printk("About to add panel\n");
 
 	ret = drm_panel_add(&s6->panel);
 	if (ret < 0)
 		return ret;
 
+	printk("About to attach\n");
+
 	ret = mipi_dsi_attach(dsi);
 	if (ret < 0)
 		drm_panel_remove(&s6->panel);
+	printk("Probed\n");
 
 	return ret;
 }
