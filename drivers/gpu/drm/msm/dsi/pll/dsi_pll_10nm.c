@@ -646,6 +646,7 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm)
 	int ret;
 
 	DBG("DSI%d", pll_10nm->id);
+	printk("pll_10nm_register Start!\n");
 
 	hw_data = devm_kzalloc(dev, sizeof(*hw_data) +
 			       NUM_PROVIDED_CLKS * sizeof(struct clk_hw *),
@@ -656,6 +657,7 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm)
 	snprintf(vco_name, 32, "dsi%dvco_clk", pll_10nm->id);
 	pll_10nm->base.clk_hw.init = &vco_init;
 
+	printk("pll_10nm_register hw!\n");
 	ret = clk_hw_register(dev, &pll_10nm->base.clk_hw);
 	if (ret)
 		return ret;
@@ -665,6 +667,7 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm)
 	snprintf(clk_name, 32, "dsi%d_pll_out_div_clk", pll_10nm->id);
 	snprintf(parent, 32, "dsi%dvco_clk", pll_10nm->id);
 
+	printk("pll_10nm_register divider 1!\n");
 	hw = clk_hw_register_divider(dev, clk_name,
 				     parent, CLK_SET_RATE_PARENT,
 				     pll_10nm->mmio +
@@ -677,6 +680,7 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm)
 
 	snprintf(clk_name, 32, "dsi%d_pll_bit_clk", pll_10nm->id);
 	snprintf(parent, 32, "dsi%d_pll_out_div_clk", pll_10nm->id);
+	printk("pll_10nm_register divider 2!\n");
 
 	/* BIT CLK: DIV_CTRL_3_0 */
 	hw = clk_hw_register_divider(dev, clk_name, parent,
@@ -693,6 +697,7 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm)
 	snprintf(clk_name, 32, "dsi%d_phy_pll_out_byteclk", pll_10nm->id);
 	snprintf(parent, 32, "dsi%d_pll_bit_clk", pll_10nm->id);
 
+	printk("pll_10nm_register fixed factor!\n");
 	/* DSI Byte clock = VCO_CLK / OUT_DIV / BIT_DIV / 8 */
 	hw = clk_hw_register_fixed_factor(dev, clk_name, parent,
 					  CLK_SET_RATE_PARENT, 1, 8);
@@ -705,6 +710,7 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm)
 	snprintf(clk_name, 32, "dsi%d_pll_by_2_bit_clk", pll_10nm->id);
 	snprintf(parent, 32, "dsi%d_pll_bit_clk", pll_10nm->id);
 
+	printk("pll_10nm_register fixed factor 2!\n");
 	hw = clk_hw_register_fixed_factor(dev, clk_name, parent,
 					  0, 1, 2);
 	if (IS_ERR(hw))
@@ -715,6 +721,7 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm)
 	snprintf(clk_name, 32, "dsi%d_pll_post_out_div_clk", pll_10nm->id);
 	snprintf(parent, 32, "dsi%d_pll_out_div_clk", pll_10nm->id);
 
+	printk("pll_10nm_register fixed factor 3!\n");
 	hw = clk_hw_register_fixed_factor(dev, clk_name, parent,
 					  0, 1, 4);
 	if (IS_ERR(hw))
@@ -728,6 +735,7 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm)
 	snprintf(parent3, 32, "dsi%d_pll_out_div_clk", pll_10nm->id);
 	snprintf(parent4, 32, "dsi%d_pll_post_out_div_clk", pll_10nm->id);
 
+	printk("pll_10nm_register mux\n");
 	hw = clk_hw_register_mux(dev, clk_name,
 				 (const char *[]){
 				 parent, parent2, parent3, parent4
@@ -742,6 +750,7 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm)
 	snprintf(clk_name, 32, "dsi%d_phy_pll_out_dsiclk", pll_10nm->id);
 	snprintf(parent, 32, "dsi%d_pclk_mux", pll_10nm->id);
 
+	printk("pll_10nm_register another divider\n");
 	/* PIX CLK DIV : DIV_CTRL_7_4*/
 	hw = clk_hw_register_divider(dev, clk_name, parent,
 				     0, pll_10nm->phy_cmn_mmio +
@@ -759,6 +768,7 @@ static int pll_10nm_register(struct dsi_pll_10nm *pll_10nm)
 	hw_data->num = NUM_PROVIDED_CLKS;
 	pll_10nm->hw_data = hw_data;
 
+	printk("pll_10nm_register provider\n");
 	ret = of_clk_add_hw_provider(dev->of_node, of_clk_hw_onecell_get,
 				     pll_10nm->hw_data);
 	if (ret) {
