@@ -410,14 +410,16 @@
 		compatible = "samsung,s6e3ha8";
 		reg = <0>;
 
+		pinctrl-names = "default";
+		pinctrl-0 = <&screen_reset>;
+
 		vddi-supply = <&vreg_l14a_1p88>;
 		vci-supply = <&vreg_l28a_3p0>;
 /* these regulators are not supported yet
 		vdispp-supply = <&lab_regulator>;
 		vdispn-supply = <&ibb_regulator>;
 */
-
-/* pinctrl not added yet */
+		reset_gpio = <&tlmm 6 GPIO_ACTIVE_HIGH>;
 
 		ports {
 			#address-cells = <1>;
@@ -469,6 +471,16 @@
 
 &tlmm {
 	gpio-reserved-ranges = <0 4>, <81 4>;
+	screen_reset: screen_reset {
+		pinmux {
+			pins = "gpio6";
+			function = "gpio";
+		};
+
+		pinconf {
+			pins = "gpio6";
+		};
+	};
 };
 /*
 &uart9 {
