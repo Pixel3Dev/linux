@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * MIPI-DSI Samsung s6d16d0 panel driver. This is a 864x480
+ * MIPI-DSI Samsung s6e3ha8 panel driver. This is a 864x480
  * AMOLED panel with a command-only DSI interface.
  */
 
@@ -15,10 +15,10 @@
 #include <linux/of_device.h>
 #include <linux/module.h>
 
-struct s6d16d0 {
+struct s6e3ha8 {
 	struct device *dev;
 	struct drm_panel panel;
-	struct regulator *supply;
+	struct regulator *supply[2];
 	struct gpio_desc *reset_gpio;
 };
 
@@ -26,35 +26,29 @@ struct s6d16d0 {
  * The timings are not very helpful as the display is used in
  * command mode.
  */
-static const struct drm_display_mode samsung_s6d16d0_mode = {
-	/* HS clock, (htotal*vtotal*vrefresh)/1000 */
-	.clock = 420160,
-	.hdisplay = 864,
-	.hsync_start = 864 + 154,
-	.hsync_end = 864 + 154 + 16,
-	.htotal = 864 + 154 + 16 + 32,
-	.vdisplay = 480,
-	.vsync_start = 480 + 1,
-	.vsync_end = 480 + 1 + 1,
-	.vtotal = 480 + 1 + 1 + 1,
-	/*
-	 * This depends on the clocking HS vs LP rate, this value
-	 * is calculated as:
-	 * vrefresh = (clock * 1000) / (htotal*vtotal)
-	 */
-	.vrefresh = 816,
-	.width_mm = 84,
-	.height_mm = 48,
+static const struct drm_display_mode samsung_s6e3ha8_mode = {
+	.clock = 342651,
+	.hdisplay = 1440,
+	.hsync_start = 1440 + 116,
+	.hsync_end = 1440 + 116 + 44,
+	.htotal = 1440 + 116 + 44 + 116,
+	.vdisplay = 2960,
+	.vsync_start = 2960 + 124,
+	.vsync_end = 2960 + 124 + 120,
+	.vtotal = 2960 + 124 + 120 + 124,
+	.vrefresh = 60,
+	.width_mm = 70,
+	.height_mm = 144,
 };
 
-static inline struct s6d16d0 *panel_to_s6d16d0(struct drm_panel *panel)
+static inline struct s6e3ha8 *panel_to_s6e3ha8(struct drm_panel *panel)
 {
-	return container_of(panel, struct s6d16d0, panel);
+	return container_of(panel, struct s6e3ha8, panel);
 }
 
-static int s6d16d0_unprepare(struct drm_panel *panel)
+static int s6e3ha8_unprepare(struct drm_panel *panel)
 {
-	struct s6d16d0 *s6 = panel_to_s6d16d0(panel);
+	struct s6e3ha8 *s6 = panel_to_s6e3ha8(panel);
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(s6->dev);
 	int ret;
 
@@ -68,18 +62,24 @@ static int s6d16d0_unprepare(struct drm_panel *panel)
 
 	/* Assert RESET */
 	gpiod_set_value_cansleep(s6->reset_gpio, 1);
-	regulator_disable(s6->supply);
+	regulator_disable(s6->supply[0]);
+	regulator_disable(s6->supply[1]);
 
 	return 0;
 }
 
-static int s6d16d0_prepare(struct drm_panel *panel)
+static int s6e3ha8_prepare(struct drm_panel *panel)
 {
-	struct s6d16d0 *s6 = panel_to_s6d16d0(panel);
+	struct s6e3ha8 *s6 = panel_to_s6e3ha8(panel);
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(s6->dev);
 	int ret;
 
-	ret = regulator_enable(s6->supply);
+	ret = regulator_enable(s6->supply[0]);
+	if (ret) {
+		DRM_DEV_ERROR(s6->dev, "failed to enable supply (%d)\n", ret);
+		return ret;
+	}
+	ret = regulator_enable(s6->supply[1]);
 	if (ret) {
 		DRM_DEV_ERROR(s6->dev, "failed to enable supply (%d)\n", ret);
 		return ret;
@@ -111,9 +111,9 @@ static int s6d16d0_prepare(struct drm_panel *panel)
 	return 0;
 }
 
-static int s6d16d0_enable(struct drm_panel *panel)
+static int s6e3ha8_enable(struct drm_panel *panel)
 {
-	struct s6d16d0 *s6 = panel_to_s6d16d0(panel);
+	struct s6e3ha8 *s6 = panel_to_s6e3ha8(panel);
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(s6->dev);
 	int ret;
 
@@ -127,9 +127,9 @@ static int s6d16d0_enable(struct drm_panel *panel)
 	return 0;
 }
 
-static int s6d16d0_disable(struct drm_panel *panel)
+static int s6e3ha8_disable(struct drm_panel *panel)
 {
-	struct s6d16d0 *s6 = panel_to_s6d16d0(panel);
+	struct s6e3ha8 *s6 = panel_to_s6e3ha8(panel);
 	struct mipi_dsi_device *dsi = to_mipi_dsi_device(s6->dev);
 	int ret;
 
@@ -143,7 +143,7 @@ static int s6d16d0_disable(struct drm_panel *panel)
 	return 0;
 }
 
-static int s6d16d0_get_modes(struct drm_panel *panel)
+static int s6e3ha8_get_modes(struct drm_panel *panel)
 {
 	struct drm_connector *connector = panel->connector;
 	struct drm_display_mode *mode;
@@ -151,7 +151,7 @@ static int s6d16d0_get_modes(struct drm_panel *panel)
 	strncpy(connector->display_info.name, "Samsung S6D16D0\0",
 		DRM_DISPLAY_INFO_LEN);
 
-	mode = drm_mode_duplicate(panel->drm, &samsung_s6d16d0_mode);
+	mode = drm_mode_duplicate(panel->drm, &samsung_s6e3ha8_mode);
 	if (!mode) {
 		DRM_ERROR("bad mode or failed to add mode\n");
 		return -EINVAL;
@@ -167,31 +167,29 @@ static int s6d16d0_get_modes(struct drm_panel *panel)
 	return 1; /* Number of modes */
 }
 
-static const struct drm_panel_funcs s6d16d0_drm_funcs = {
-	.disable = s6d16d0_disable,
-	.unprepare = s6d16d0_unprepare,
-	.prepare = s6d16d0_prepare,
-	.enable = s6d16d0_enable,
-	.get_modes = s6d16d0_get_modes,
+static const struct drm_panel_funcs s6e3ha8_drm_funcs = {
+	.disable = s6e3ha8_disable,
+	.unprepare = s6e3ha8_unprepare,
+	.prepare = s6e3ha8_prepare,
+	.enable = s6e3ha8_enable,
+	.get_modes = s6e3ha8_get_modes,
 };
 
-static int s6d16d0_probe(struct mipi_dsi_device *dsi)
+static int s6e3ha8_probe(struct mipi_dsi_device *dsi)
 {
 	struct device *dev = &dsi->dev;
-	struct s6d16d0 *s6;
+	struct s6e3ha8 *s6;
 	int ret;
 
-	s6 = devm_kzalloc(dev, sizeof(struct s6d16d0), GFP_KERNEL);
+	s6 = devm_kzalloc(dev, sizeof(struct s6e3ha8), GFP_KERNEL);
 	if (!s6)
 		return -ENOMEM;
 
 	mipi_dsi_set_drvdata(dsi, s6);
 	s6->dev = dev;
 
-	dsi->lanes = 2;
+	dsi->lanes = 4;
 	dsi->format = MIPI_DSI_FMT_RGB888;
-	dsi->hs_rate = 420160000;
-	dsi->lp_rate = 19200000;
 	/*
 	 * This display uses command mode so no MIPI_DSI_MODE_VIDEO
 	 * or MIPI_DSI_MODE_VIDEO_SYNC_PULSE
@@ -201,11 +199,15 @@ static int s6d16d0_probe(struct mipi_dsi_device *dsi)
 	 */
 	dsi->mode_flags =
 		MIPI_DSI_CLOCK_NON_CONTINUOUS |
-		MIPI_DSI_MODE_EOT_PACKET;
+		MIPI_DSI_MODE_EOT_PACKET |
+		MIPI_DSI_MODE_LPM;
 
-	s6->supply = devm_regulator_get(dev, "vdd1");
-	if (IS_ERR(s6->supply))
-		return PTR_ERR(s6->supply);
+	s6->supply[0] = devm_regulator_get(dev, "vddi");
+	if (IS_ERR(s6->supply[0]))
+		return PTR_ERR(s6->supply[0]);
+	s6->supply[1] = devm_regulator_get(dev, "vci");
+	if (IS_ERR(s6->supply[1]))
+		return PTR_ERR(s6->supply[1]);
 
 	/* This asserts RESET by default */
 	s6->reset_gpio = devm_gpiod_get_optional(dev, "reset",
@@ -220,7 +222,7 @@ static int s6d16d0_probe(struct mipi_dsi_device *dsi)
 
 	drm_panel_init(&s6->panel);
 	s6->panel.dev = dev;
-	s6->panel.funcs = &s6d16d0_drm_funcs;
+	s6->panel.funcs = &s6e3ha8_drm_funcs;
 
 	ret = drm_panel_add(&s6->panel);
 	if (ret < 0)
@@ -233,9 +235,9 @@ static int s6d16d0_probe(struct mipi_dsi_device *dsi)
 	return ret;
 }
 
-static int s6d16d0_remove(struct mipi_dsi_device *dsi)
+static int s6e3ha8_remove(struct mipi_dsi_device *dsi)
 {
-	struct s6d16d0 *s6 = mipi_dsi_get_drvdata(dsi);
+	struct s6e3ha8 *s6 = mipi_dsi_get_drvdata(dsi);
 
 	mipi_dsi_detach(dsi);
 	drm_panel_remove(&s6->panel);
@@ -243,22 +245,22 @@ static int s6d16d0_remove(struct mipi_dsi_device *dsi)
 	return 0;
 }
 
-static const struct of_device_id s6d16d0_of_match[] = {
-	{ .compatible = "samsung,s6d16d0" },
+static const struct of_device_id s6e3ha8_of_match[] = {
+	{ .compatible = "samsung,s6e3ha8" },
 	{ }
 };
-MODULE_DEVICE_TABLE(of, s6d16d0_of_match);
+MODULE_DEVICE_TABLE(of, s6e3ha8_of_match);
 
-static struct mipi_dsi_driver s6d16d0_driver = {
-	.probe = s6d16d0_probe,
-	.remove = s6d16d0_remove,
+static struct mipi_dsi_driver s6e3ha8_driver = {
+	.probe = s6e3ha8_probe,
+	.remove = s6e3ha8_remove,
 	.driver = {
-		.name = "panel-samsung-s6d16d0",
-		.of_match_table = s6d16d0_of_match,
+		.name = "panel-samsung-s6e3ha8",
+		.of_match_table = s6e3ha8_of_match,
 	},
 };
-module_mipi_dsi_driver(s6d16d0_driver);
+module_mipi_dsi_driver(s6e3ha8_driver);
 
 MODULE_AUTHOR("Linus Wallei <linus.walleij@linaro.org>");
-MODULE_DESCRIPTION("MIPI-DSI s6d16d0 Panel Driver");
+MODULE_DESCRIPTION("MIPI-DSI s6e3ha8 Panel Driver");
 MODULE_LICENSE("GPL v2");
