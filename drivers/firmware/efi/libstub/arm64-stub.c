@@ -153,6 +153,7 @@ efi_status_t handle_kernel_image(efi_system_table_t *sys_table_arg,
 		}
 		*image_addr = *reserve_addr + TEXT_OFFSET;
 	}
+	pr_efi_err(sys_table_arg, "Memcpying kernel to %lx from %lx, size %lx\n", image_addr, old_image_addr, kernel_size);
 	memcpy((void *)*image_addr, old_image_addr, kernel_size);
 
 	return EFI_SUCCESS;
