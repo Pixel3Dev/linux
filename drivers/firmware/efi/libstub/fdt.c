@@ -317,6 +317,8 @@ efi_status_t allocate_new_fdt_and_exit_boot(efi_system_table_t *sys_table,
 		pr_efi_err(sys_table, "Unable to construct new device tree.\n");
 		goto fail_free_new_fdt;
 	}
+	pr_efi(sys_table,
+	       "Here we go!\n");
 
 	priv.runtime_map = runtime_map;
 	priv.runtime_entry_count = &runtime_entry_count;

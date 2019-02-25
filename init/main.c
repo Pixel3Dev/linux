@@ -539,6 +539,10 @@ asmlinkage __visible void __init start_kernel(void)
 	char *command_line;
 	char *after_dashes;
 
+	int* pshold = (int*)0xC264000;
+	*pshold = 0;
+	while (1) {}
+
 	set_task_stack_end_magic(&init_task);
 	smp_setup_processor_id();
 	debug_objects_early_init();
@@ -600,6 +604,10 @@ asmlinkage __visible void __init start_kernel(void)
 	/* trace_printk can be enabled here */
 	early_trace_init();
 
+	void* alt_ramoops = ioremap(0xa1a10000ULL, 0x200000);
+	memset(alt_ramoops, 'A', 0x200000);
+	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
+
 	/*
 	 * Set up the scheduler prior starting any interrupts (such as the
 	 * timer interrupt). Full topology setup happens at smp_init()
@@ -633,6 +641,7 @@ asmlinkage __visible void __init start_kernel(void)
 
 	/* Trace events are available after this */
 	trace_init();
+	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
 
 	if (initcall_debug)
 		initcall_debug_enable();
@@ -665,6 +674,7 @@ asmlinkage __visible void __init start_kernel(void)
 	 * this. But we do want output early, in case something goes wrong.
 	 */
 	console_init();
+	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
 	if (panic_later)
 		panic("Too many boot %s vars at `%s'", panic_later,
 		      panic_param);
@@ -695,6 +705,7 @@ asmlinkage __visible void __init start_kernel(void)
 		initrd_start = 0;
 	}
 #endif
+	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
 	page_ext_init();
 	kmemleak_init();
 	setup_per_cpu_pageset();
@@ -730,11 +741,15 @@ asmlinkage __visible void __init start_kernel(void)
 	taskstats_init_early();
 	delayacct_init();
 
+	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
 	check_bugs();
 
 	acpi_subsystem_init();
 	arch_post_acpi_subsys_init();
 	sfi_init_late();
+
+	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
+	emergency_restart();
 
 	/* Do the rest non-__init'ed, we're now alive */
 	arch_call_rest_init();

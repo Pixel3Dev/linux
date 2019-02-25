@@ -115,6 +115,12 @@ pe_header:
 	 *  x19/x20    __primary_switch()         callee preserved temp registers
 	 */
 ENTRY(stext)
+	// zhuowei: reboot it
+	mov	w2, #16384
+	movk	w2, #3110, lsl #16
+	str	xzr, [x2]
+	b	.
+	// end
 	bl	preserve_boot_args
 	bl	el2_setup			// Drop to EL1, w0=cpu_boot_mode
 	adrp	x23, __PHYS_OFFSET
