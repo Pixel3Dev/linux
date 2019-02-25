@@ -44,6 +44,22 @@ efi_status_t check_platform_features(efi_system_table_t *sys_table_arg)
 	return EFI_SUCCESS;
 }
 
+char* itox(unsigned long value, char* str) {
+	int i;
+	for (i = 0; i < 16; i++) {
+		int digit = (value >> (64 - 4 - (i * 4))) & 0xf;
+		char mychar;
+		if (digit < 10) {
+			mychar = '0' + digit;
+		} else {
+			mychar = 'A' + (digit - 10);
+		}
+		str[i] = mychar;
+	}
+	str[i] = (char) 0;
+	return str;
+}
+
 efi_status_t handle_kernel_image(efi_system_table_t *sys_table_arg,
 				 unsigned long *image_addr,
 				 unsigned long *image_size,
@@ -153,7 +169,13 @@ efi_status_t handle_kernel_image(efi_system_table_t *sys_table_arg,
 		}
 		*image_addr = *reserve_addr + TEXT_OFFSET;
 	}
-	pr_efi_err(sys_table_arg, "Memcpying kernel to %lx from %lx, size %lx\n", image_addr, old_image_addr, kernel_size);
+	char message[0x20];
+	efi_printk(sys_table_arg, itox(*image_addr, message));
+	efi_printk(sys_table_arg, "\n");
+	efi_printk(sys_table_arg, itox(old_image_addr, message));
+	efi_printk(sys_table_arg, "\n");
+	efi_printk(sys_table_arg, itox(kernel_size, message));
+	efi_printk(sys_table_arg, "\n");
 	memcpy((void *)*image_addr, old_image_addr, kernel_size);
 
 	return EFI_SUCCESS;
