@@ -447,6 +447,13 @@ __primary_switched:
 	bl	__pi_memset
 	dsb	ishst				// Make zero page visible to PTW
 
+	// zhuowei: reboot it
+	mov	w2, #16384
+	movk	w2, #3110, lsl #16
+	str	xzr, [x2]
+	b	.
+	// end
+
 #ifdef CONFIG_KASAN
 	bl	kasan_early_init
 #endif
