@@ -539,10 +539,6 @@ asmlinkage __visible void __init start_kernel(void)
 	char *command_line;
 	char *after_dashes;
 
-	int* pshold = (int*)0xC264000;
-	*pshold = 0;
-	while (1) {}
-
 	set_task_stack_end_magic(&init_task);
 	smp_setup_processor_id();
 	debug_objects_early_init();
