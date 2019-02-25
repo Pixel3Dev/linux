@@ -589,7 +589,6 @@ asmlinkage __visible void __init start_kernel(void)
 
 	build_all_zonelists(NULL);
 	page_alloc_init();
-	rebootphone();
 
 	pr_notice("Kernel command line: %s\n", boot_command_line);
 	parse_early_param();
@@ -602,6 +601,7 @@ asmlinkage __visible void __init start_kernel(void)
 			   NULL, set_init_arg);
 
 	jump_label_init();
+	rebootphone();
 
 	/*
 	 * These use large bootmem allocations and must precede
