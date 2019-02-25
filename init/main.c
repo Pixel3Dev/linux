@@ -534,10 +534,28 @@ void __init __weak arch_call_rest_init(void)
 	rest_init();
 }
 
+static void __init rebootphone(void) {
+	asm(
+	"mov	w0, #9\n"
+	"movk	w0, #33792, lsl #16\n" // 0x84000009
+	"mov	x1, xzr\n"
+	"mov	x2, xzr\n"
+	"mov	x3, xzr\n"
+	"mov	x4, xzr\n"
+	"mov	x5, xzr\n"
+	"mov	x6, xzr\n"
+	"mov	x7, xzr\n"
+	"smc	#0\n"
+	);
+	while (1) {}
+}
+
 asmlinkage __visible void __init start_kernel(void)
 {
 	char *command_line;
 	char *after_dashes;
+
+	rebootphone();
 
 	set_task_stack_end_magic(&init_task);
 	smp_setup_processor_id();
