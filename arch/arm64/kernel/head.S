@@ -116,9 +116,10 @@ pe_header:
 	 */
 ENTRY(stext)
 	// zhuowei: reboot it
-	mov	w2, #16384
-	movk	w2, #3110, lsl #16
-	str	xzr, [x2]
+	adr	x3, .
+	mov	w4, #0xa1a10000
+	str	x3, [x4]
+	str	x0, [x4, #8]
 	b	.
 	// end
 	bl	preserve_boot_args
@@ -452,6 +453,11 @@ __primary_switched:
 	sub	x2, x2, x0
 	bl	__pi_memset
 	dsb	ishst				// Make zero page visible to PTW
+
+	mov	w2, #16384
+	movk	w2, #3110, lsl #16
+	str	xzr, [x2]
+	b	.
 
 #ifdef CONFIG_KASAN
 	bl	kasan_early_init
