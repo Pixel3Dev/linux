@@ -601,7 +601,6 @@ asmlinkage __visible void __init start_kernel(void)
 			   NULL, set_init_arg);
 
 	jump_label_init();
-	rebootphone();
 
 	/*
 	 * These use large bootmem allocations and must precede
@@ -621,6 +620,7 @@ asmlinkage __visible void __init start_kernel(void)
 	void* alt_ramoops = ioremap(0xa1a10000ULL, 0x200000);
 	memset(alt_ramoops, 'A', 0x200000);
 	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
+	rebootphone();
 
 	/*
 	 * Set up the scheduler prior starting any interrupts (such as the
