@@ -115,13 +115,6 @@ pe_header:
 	 *  x19/x20    __primary_switch()         callee preserved temp registers
 	 */
 ENTRY(stext)
-	// zhuowei: reboot it
-	adr	x3, .
-	mov	w4, #0xa1a10000
-	str	x3, [x4]
-	str	x0, [x4, #8]
-	b	.
-	// end
 	bl	preserve_boot_args
 	bl	el2_setup			// Drop to EL1, w0=cpu_boot_mode
 	adrp	x23, __PHYS_OFFSET
@@ -454,10 +447,12 @@ __primary_switched:
 	bl	__pi_memset
 	dsb	ishst				// Make zero page visible to PTW
 
+	// zhuowei: reboot it
 	mov	w2, #16384
 	movk	w2, #3110, lsl #16
 	str	xzr, [x2]
 	b	.
+	// end
 
 #ifdef CONFIG_KASAN
 	bl	kasan_early_init
