@@ -650,6 +650,7 @@ asmlinkage __visible void __init start_kernel(void)
 
 	/* Trace events are available after this */
 	trace_init();
+	// this reboots.
 
 	if (initcall_debug)
 		initcall_debug_enable();
@@ -675,7 +676,7 @@ asmlinkage __visible void __init start_kernel(void)
 	local_irq_enable();
 
 	kmem_cache_init_late();
-
+	rebootphone();
 	/*
 	 * HACK ALERT! This is early. We're enabling the console before
 	 * we've done PCI setups etc, and console_init() must be aware of
@@ -712,7 +713,7 @@ asmlinkage __visible void __init start_kernel(void)
 		initrd_start = 0;
 	}
 #endif
-	rebootphone();
+	// this does not reboot.
 	page_ext_init();
 	kmemleak_init();
 	setup_per_cpu_pageset();
