@@ -664,6 +664,7 @@ asmlinkage __visible void __init start_kernel(void)
 	init_timers();
 	hrtimers_init();
 	softirq_init();
+	rebootphone();
 	timekeeping_init();
 	time_init();
 	printk_safe_init();
@@ -676,7 +677,7 @@ asmlinkage __visible void __init start_kernel(void)
 	local_irq_enable();
 
 	kmem_cache_init_late();
-	rebootphone();
+	// this doesn't reboot
 	/*
 	 * HACK ALERT! This is early. We're enabling the console before
 	 * we've done PCI setups etc, and console_init() must be aware of
@@ -713,7 +714,6 @@ asmlinkage __visible void __init start_kernel(void)
 		initrd_start = 0;
 	}
 #endif
-	// this does not reboot.
 	page_ext_init();
 	kmemleak_init();
 	setup_per_cpu_pageset();
