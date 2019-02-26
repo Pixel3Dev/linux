@@ -656,16 +656,16 @@ asmlinkage __visible void __init start_kernel(void)
 		initcall_debug_enable();
 
 	context_tracking_init();
+	rebootphone();
 	/* init some links before init_ISA_irqs() */
 	early_irq_init();
 	init_IRQ();
 	tick_init();
-	rebootphone();
+	// this does not reboot
 	rcu_init_nohz();
 	init_timers();
 	hrtimers_init();
 	softirq_init();
-	// this does not reboot
 	timekeeping_init();
 	time_init();
 	printk_safe_init();
