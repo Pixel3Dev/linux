@@ -660,11 +660,12 @@ asmlinkage __visible void __init start_kernel(void)
 	early_irq_init();
 	init_IRQ();
 	tick_init();
+	rebootphone();
 	rcu_init_nohz();
 	init_timers();
 	hrtimers_init();
 	softirq_init();
-	rebootphone();
+	// this does not reboot
 	timekeeping_init();
 	time_init();
 	printk_safe_init();
@@ -677,7 +678,6 @@ asmlinkage __visible void __init start_kernel(void)
 	local_irq_enable();
 
 	kmem_cache_init_late();
-	// this doesn't reboot
 	/*
 	 * HACK ALERT! This is early. We're enabling the console before
 	 * we've done PCI setups etc, and console_init() must be aware of
