@@ -712,10 +712,6 @@ asmlinkage __visible void __init start_kernel(void)
 		initrd_start = 0;
 	}
 #endif
-	void* alt_ramoops = ioremap(0xa1a10000ULL, 0x200000);
-	memset(alt_ramoops, 'A', 0x200000);
-	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
-	rebootphone();
 	page_ext_init();
 	kmemleak_init();
 	setup_per_cpu_pageset();
@@ -751,6 +747,9 @@ asmlinkage __visible void __init start_kernel(void)
 	taskstats_init_early();
 	delayacct_init();
 
+	rebootphone();
+	void* alt_ramoops = ioremap(0xa1a10000ULL, 0x200000);
+	memset(alt_ramoops, 'A', 0x200000);
 	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
 	check_bugs();
 
