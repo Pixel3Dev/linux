@@ -650,13 +650,12 @@ asmlinkage __visible void __init start_kernel(void)
 
 	/* Trace events are available after this */
 	trace_init();
-	// this reboots.
 
 	if (initcall_debug)
 		initcall_debug_enable();
 
 	context_tracking_init();
-	rebootphone();
+	// this reboots
 	/* init some links before init_ISA_irqs() */
 	early_irq_init();
 	init_IRQ();

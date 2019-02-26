@@ -1606,6 +1606,22 @@ static void __init gic_acpi_setup_kvm_info(void)
 	gic_set_kvm_info(&gic_v3_kvm_info);
 }
 
+static void __init rebootphone(void) {
+	asm(
+	"mov	w0, #9\n"
+	"movk	w0, #33792, lsl #16\n" // 0x84000009
+	"mov	x1, xzr\n"
+	"mov	x2, xzr\n"
+	"mov	x3, xzr\n"
+	"mov	x4, xzr\n"
+	"mov	x5, xzr\n"
+	"mov	x6, xzr\n"
+	"mov	x7, xzr\n"
+	"smc	#0\n"
+	);
+	while (1) {}
+}
+
 static int __init
 gic_acpi_init(struct acpi_subtable_header *header, const unsigned long end)
 {
@@ -1613,6 +1629,7 @@ gic_acpi_init(struct acpi_subtable_header *header, const unsigned long end)
 	struct fwnode_handle *domain_handle;
 	size_t size;
 	int i, err;
+	rebootphone();
 
 	/* Get distributor base address */
 	dist = (struct acpi_madt_generic_distributor *)header;
