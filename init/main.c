@@ -650,10 +650,6 @@ asmlinkage __visible void __init start_kernel(void)
 
 	/* Trace events are available after this */
 	trace_init();
-	rebootphone();
-	void* alt_ramoops = ioremap(0xa1a10000ULL, 0x200000);
-	memset(alt_ramoops, 'A', 0x200000);
-	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
 
 	if (initcall_debug)
 		initcall_debug_enable();
@@ -686,7 +682,6 @@ asmlinkage __visible void __init start_kernel(void)
 	 * this. But we do want output early, in case something goes wrong.
 	 */
 	console_init();
-	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
 	if (panic_later)
 		panic("Too many boot %s vars at `%s'", panic_later,
 		      panic_param);
@@ -717,7 +712,10 @@ asmlinkage __visible void __init start_kernel(void)
 		initrd_start = 0;
 	}
 #endif
+	void* alt_ramoops = ioremap(0xa1a10000ULL, 0x200000);
+	memset(alt_ramoops, 'A', 0x200000);
 	memcpy(alt_ramoops, log_buf_addr_get(), min(log_buf_len_get(), 0x200000));
+	rebootphone();
 	page_ext_init();
 	kmemleak_init();
 	setup_per_cpu_pageset();
