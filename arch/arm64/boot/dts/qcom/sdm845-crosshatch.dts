@@ -93,6 +93,33 @@
 		vin-supply = <&vph_pwr>;
 	};
 };
+
+/* memory overrides */
+
+&mpss_region {
+	reg = <0 0x8e000000 0 0x9800000>;
+};
+
+&venus_mem {
+	reg = <0 0x97800000 0 0x500000>;
+};
+
+&cdsp_mem {
+	reg = <0 0x97D00000 0 0x800000>;
+};
+
+&mba_region {
+	reg = <0 0x98500000 0 0x200000>;
+};
+
+&slpi_mem {
+	reg = <0 0x98700000 0 0x1400000>;
+};
+
+&spss_mem {
+	reg = <0 0x99B00000 0 0x100000>;
+};
+
 /* This is entirely copied from mtp, except for commented parts. */
 &apps_rsc {
 	pm8998-rpmh-regulators {
